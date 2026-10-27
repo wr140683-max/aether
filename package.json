@@ -1,12 +1,12 @@
 {
-  "name": "aether",
+  "name": "helix",
   "version": "0.1.0",
   "private": true,
-  "description": "Open-source agentic vibe-coding platform — better than Emergent",
+  "description": "Helix — Transparent open-source agentic vibe-coding platform. Better than Emergent.",
   "scripts": {
-    "dev": "echo 'Coming in next commits — web UI + agents'",
-    "build": "echo 'Scaffold only'",
-    "lint": "echo 'Scaffold only'"
+    "dev": "pnpm --filter @helix/web dev",
+    "build": "pnpm --filter @helix/web build",
+    "lint": "pnpm --filter @helix/web lint"
   },
   "workspaces": [
     "apps/*",
@@ -18,7 +18,8 @@
     "vibe-coding",
     "app-builder",
     "open-source",
-    "emergent-alternative"
+    "emergent-alternative",
+    "helix"
   ],
   "license": "MIT",
   "author": "wr140683-max"

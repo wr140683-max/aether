@@ -4,77 +4,71 @@
 
 > Describe what you want. Watch transparent multi-agent planning, coding, testing, and deployment. Own every line of code. Run it locally or self-host it.
 
-**Previous temporary names:** Aether → Pulse → **Helix** (final for now).
-
-## Why Helix > Emergent
+## Why Helix is better than Emergent
 
 | Feature | Emergent | **Helix** |
 |---------|----------|-----------|
-| Cost model | Opaque credits that burn on loops | **BYOK + local models**. Zero platform tax |
-| Agent transparency | Black-box | Full plan → diffs → test **evidence** → human approve |
-| Code ownership | Restricted on lower plans | Always full Git ownership |
-| Stack freedom | Mostly fixed | Multi-stack choice |
-| Recovery | Data loss reports | Full Git history + easy rollback |
-| Control | Agent breaks features | Human-in-the-loop by default |
-| Trust | Mixed reviews on fees & loops | No dark patterns, clear policies, a11y, data deletion |
+| Cost | Opaque credits that burn on loops | **BYOK + live cost meter**. Zero platform tax on model spend |
+| Transparency | Black box | Full **Agent Timeline**: Plan → Diffs → Test Evidence → Approve |
+| Control | Agent often ignores instructions | Human approval required for non-trivial changes |
+| UI | Functional but average polish | 3-panel workspace (Files + Live Preview + Agent Timeline) |
+| Ownership | Sometimes restricted | Always full Git ownership |
+| Trust | Many complaints about fees & refunds | Built-in compliance, no dark patterns, clear refund policy |
 
-## Trust & Compliance (day one)
-
-- Privacy, Terms, Refund, Cookie policies
-- Data deletion process
-- Compliance checklist (dark patterns, a11y, SDKs, claims, fonts)
-- Cookie consent (open-source CMP planned: c15t etc.)
-- WCAG targets: alt text, contrast, keyboard navigation
-
-See `docs/legal/` and `docs/COMPLIANCE_CHECKLIST.md`.
-
-## Core Architecture
+## UI (designed better than Emergent)
 
 ```
-User Prompt
-    ↓
-Planner Agent
-    ↓
-Coder Agent          → real diffs
-    ↓
-Tester Agent         → evidence (logs, exit codes)
-    ↓
-Human Review         → approve / reject / feedback
-    ↓
-Git Commit + Deploy
+┌──────────────┐─────────────────────────┐─────────────────────┐
+│  Projects    │   Live Preview / Diffs  │  Agent Timeline      │
+│  + Files     │   (updates after        │  Plan → Code →       │
+│  + History   │    each approval)       │  Evidence → Approve  │
+└──────────────┴──────────────────────────┴──────────────────────┘
 ```
 
-No silent loops. Max retries then escalate.
+- Every agent step is visible
+- Diffs shown before apply
+- Big clear **Approve / Reject / Feedback** buttons
+- Live session cost (BYOK)
+- Keyboard accessible, good contrast
 
-## Current Status (Phase 1 progress)
+## Current Status
 
-- [x] Project scaffold + rebrand to Helix
+### Phase 1
+- [x] Scaffold + rebrand to Helix
 - [x] Legal & compliance foundation
-- [x] Core types (Plan, Task, Diff, TestEvidence)
-- [x] Planner, Coder, Tester agent skeletons
-- [x] Orchestrator skeleton (retry limits + human checkpoint design)
+- [x] Core types + Planner / Coder / Tester / Orchestrator skeletons
+- [x] **Next.js 3-panel UI** (TopBar, Sidebar, Preview, Agent Timeline)
+- [x] Monetization principles documented
 - [ ] Wire real model calls (BYOK)
-- [ ] Docker sandbox execution
-- [ ] Basic Next.js UI (chat + diffs + approve)
-- [ ] Cookie consent component + a11y basics
+- [ ] Docker sandbox
+- [ ] Cookie consent + full a11y pass
 
-## Tech Stack (planned)
+### Phase 2–3
+Full-stack generation, auth, payments, self-host, teams…
 
-- Next.js 15 + Tailwind + shadcn/ui + Monaco
+## Monetization
+See `docs/MONETIZATION.md`.  
+Core idea: free/local + BYOK stays free of platform tax. Hosted version earns money with transparent pricing.
+
+## Quick Start (UI)
+
+```bash
+git clone https://github.com/wr140683-max/aether.git
+cd aether
+pnpm install
+pnpm dev
+```
+
+## Tech
+
+- Next.js 15 + Tailwind + Monaco
 - Structured multi-agent with evidence contracts
-- Docker sandbox
-- BYOK (xAI Grok, Claude, GPT, Ollama)
-- Consent: c15t or equivalent
+- BYOK (xAI, Claude, GPT, Ollama)
+- Inspired by best of: assistant-ui, OpenHands canvas, Vercel AI chatbot, Sandpack-style previews
 
 ## Repo
-
-https://github.com/wr140683-max/aether  
-(Content is Helix. Repo rename can happen later.)
-
-## Contributing
-
-Built in the open. Issues & PRs welcome.
+https://github.com/wr140683-max/aether
 
 ---
 
-**Transparent. Controllable. Trustworthy.**
+**Transparent. Controllable. Monetizable. Yours.**
