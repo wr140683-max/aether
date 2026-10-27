@@ -17,7 +17,8 @@
     "tailwind-merge": "^2.5.0",
     "lucide-react": "^0.460.0",
     "zustand": "^5.0.0",
-    "@monaco-editor/react": "^4.6.0"
+    "@monaco-editor/react": "^4.6.0",
+    "ai": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -27,5 +28,12 @@
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0"
+  },
+  "optionalDependencies": {
+    "@ai-sdk/xai": "^1.0.0",
+    "@ai-sdk/openai": "^1.0.0",
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@ai-sdk/google": "^1.0.0",
+    "e2b": "^1.0.0"
   }
 }

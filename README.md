@@ -4,53 +4,49 @@
 
 > Describe what you want. Watch transparent multi-agent planning, coding, testing, and deployment. Own every line of code. Run it locally or self-host it.
 
-## Why Helix is better than Emergent
+## Why Helix > Emergent
 
 | Feature | Emergent | **Helix** |
 |---------|----------|-----------|
-| Cost | Opaque credits that burn on loops | **BYOK + live cost meter**. Zero platform tax on model spend |
-| Transparency | Black box | Full **Agent Timeline**: Plan → Diffs → Test Evidence → Approve |
+| Cost | Opaque credits that burn on loops | **BYOK + live cost meter**. Zero platform tax |
+| Transparency | Black box | Full Agent Timeline: Plan → Diffs → Evidence → Approve |
 | Control | Agent often ignores instructions | Human approval required for non-trivial changes |
-| UI | Functional but average polish | 3-panel workspace (Files + Live Preview + Agent Timeline) |
-| Ownership | Sometimes restricted | Always full Git ownership |
-| Trust | Many complaints about fees & refunds | Built-in compliance, no dark patterns, clear refund policy |
+| UI | Average polish | 3-panel workspace (Files + Preview + Agent Timeline) |
+| Sandbox | Closed | E2B or local Docker (your choice) |
+| Trust | Many fee/refund complaints | Compliance pack + no dark patterns |
 
-## UI (designed better than Emergent)
+## Architecture highlights (this commit)
 
-```
-┌──────────────┐─────────────────────────┐─────────────────────┐
-│  Projects    │   Live Preview / Diffs  │  Agent Timeline      │
-│  + Files     │   (updates after        │  Plan → Code →       │
-│  + History   │    each approval)       │  Evidence → Approve  │
-└──────────────┴──────────────────────────┴──────────────────────┘
-```
-
-- Every agent step is visible
-- Diffs shown before apply
-- Big clear **Approve / Reject / Feedback** buttons
-- Live session cost (BYOK)
-- Keyboard accessible, good contrast
+- **BYOK LLM layer** (`packages/core/llm.ts`) — xAI, OpenAI, Anthropic, Google, Ollama + cost estimation
+- **Sandbox abstraction** (`packages/sandbox`) — E2B (cloud) or local Docker or mock
+- **Orchestrator** — plan-first, no silent full auto loops
+- **Agent API** — `POST /api/agent` with action `plan`
+- **Cookie banner** — equal Accept/Reject, no dark patterns (c15t ready later)
+- **3-panel UI** — already scaffolded
 
 ## Current Status
 
-### Phase 1
-- [x] Scaffold + rebrand to Helix
+### Phase 1 — nearly complete
+- [x] Scaffold + Helix branding
 - [x] Legal & compliance foundation
-- [x] Core types + Planner / Coder / Tester / Orchestrator skeletons
-- [x] **Next.js 3-panel UI** (TopBar, Sidebar, Preview, Agent Timeline)
-- [x] Monetization principles documented
-- [ ] Wire real model calls (BYOK)
-- [ ] Docker sandbox
-- [ ] Cookie consent + full a11y pass
+- [x] Core types + Planner / Coder / Tester
+- [x] Orchestrator with plan-first design
+- [x] Next.js 3-panel UI
+- [x] BYOK LLM abstraction + cost meter foundation
+- [x] Sandbox abstraction (E2B / Docker / mock)
+- [x] Agent API route
+- [x] Lightweight cookie consent
+- [ ] Real AI SDK generateText wiring (deps ready)
+- [ ] Full E2B / Docker implementation
+- [ ] Monaco real editor + live preview iframe
 
-### Phase 2–3
-Full-stack generation, auth, payments, self-host, teams…
+### Phase 2+
+Auth, payments, full-stack generation, teams, self-host Docker Compose…
 
 ## Monetization
-See `docs/MONETIZATION.md`.  
-Core idea: free/local + BYOK stays free of platform tax. Hosted version earns money with transparent pricing.
+See `docs/MONETIZATION.md`. Free local + BYOK. Hosted SaaS with transparent usage.
 
-## Quick Start (UI)
+## Quick Start
 
 ```bash
 git clone https://github.com/wr140683-max/aether.git
@@ -59,16 +55,22 @@ pnpm install
 pnpm dev
 ```
 
-## Tech
+Set keys in `.env.local` for real models:
+```
+XAI_API_KEY=...
+# or OPENAI_API_KEY / ANTHROPIC_API_KEY
+```
 
-- Next.js 15 + Tailwind + Monaco
-- Structured multi-agent with evidence contracts
-- BYOK (xAI, Claude, GPT, Ollama)
-- Inspired by best of: assistant-ui, OpenHands canvas, Vercel AI chatbot, Sandpack-style previews
+## Tech choices (researched)
+
+- Vercel AI SDK for multi-provider BYOK
+- E2B as preferred cloud sandbox (open source, widely used)
+- c15t for production cookie consent later
+- Inspired by OpenHands canvas, assistant-ui, Sandpack patterns
 
 ## Repo
 https://github.com/wr140683-max/aether
 
 ---
 
-**Transparent. Controllable. Monetizable. Yours.**
+**Transparent. Controllable. Powerful. Monetizable.**
