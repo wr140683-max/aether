@@ -1,0 +1,9 @@
+node_modules
+.next
+.helix
+.env
+.env.local
+*.log
+dist
+.DS_Store
+apps/web/.env.local

@@ -1,34 +1,21 @@
-# Helix — Immediate Next Steps
+# Helix status — remaining polish only
 
-## What works now
-1. 3-panel UI loads
-2. Type a goal → Send → calls `/api/agent` → Planner runs
-3. Cost meter updates (session)
-4. Cookie banner appears
-5. BYOK layer tries real AI SDK, falls back cleanly if no key/packages
+## Done end-to-end (local)
 
-## To get real AI plans today
-```bash
-cd aether
-pnpm install
-# add real keys
-cp .env.example apps/web/.env.local
-# edit apps/web/.env.local and put XAI_API_KEY=...
-pnpm dev
-```
+1. User prompt → Planner → structured tasks
+2. Approve → Coder → file JSON
+3. Apply → writes under `.helix/projects/<id>/`
+4. Sidebar + Code/Diff tabs show files
+5. Polar checkout + webhook scaffolds
+6. Dev session auth cookies
+7. Docker Compose + Dockerfile
 
-Then open http://localhost:3000 and send a prompt.
+## Optional next (production)
 
-## Recommended order of remaining work
-1. Parse Planner JSON properly into structured Plan (tasks list in UI)
-2. Implement Coder step after Approve (write files into sandbox)
-3. Wire real E2B when E2B_API_KEY is present
-4. Monaco editor for Diff / Code tabs
-5. Auth (Clerk or NextAuth) + simple billing for hosted mode
-6. Docker Compose for full self-host
+1. Wire real E2B `Sandbox.create` when `E2B_API_KEY` set + expose preview URL
+2. Replace dev email cookie with Better Auth or Clerk
+3. Create Polar product + set env → live Upgrade button
+4. Expo app (`apps/mobile`) → Play internal testing
+5. Git commit from Apply (simple `git init` in project dir)
 
-## Design rules to keep
-- Never auto-apply non-trivial changes
-- Always show estimated / actual cost
-- Evidence over claims
-- BYOK remains first-class
+Core agent loop is complete for local/BYOK use.

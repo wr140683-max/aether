@@ -1,42 +1,59 @@
 # Helix
 
-**Helix** — open-source agentic app builder. Transparent agents, BYOK, no credit traps, full code ownership.
+Open-source agentic app builder. Transparent multi-agent flow, BYOK, no credit traps.
 
-**Website + Play Store path** (Emergent is website-only).
+**Flow:** Plan → Approve & Code → Apply to disk → inspect in Code/Diff tabs.
 
-## Quick Start
+## Quick start
 
 ```bash
 git clone https://github.com/wr140683-max/aether.git
 cd aether
 pnpm install
 cp .env.example apps/web/.env.local
-# Add XAI_API_KEY=... 
+# add XAI_API_KEY=...
 pnpm dev
 ```
 
-Flow: describe app → **Plan** → **Approve & Code** → see generated files.
+Open http://localhost:3000
 
-## Status
+## What works
 
 | Feature | Status |
 |---------|--------|
 | 3-panel UI | Done |
-| Plan-first agent | Done |
-| Structured tasks | Done |
-| **Approve → Coder (file generation)** | **Done** |
-| Live cost meter | Done |
-| BYOK (multi-provider) | Done |
-| Sandbox abstraction | Done (apply-to-disk next) |
-| Cookie + legal pack | Done |
-| Payments plan (Polar primary) | Done |
-| Auth / billing live | Not yet |
-| Play Store app | Documented |
+| Plan → tasks | Done |
+| Approve → Coder | Done |
+| **Apply files to `.helix/projects`** | **Done** |
+| Sidebar live file list | Done |
+| Code / Diff / Preview tabs | Done |
+| BYOK + cost meter | Done |
+| Projects API | Done |
+| Dev auth (cookie session) | Done |
+| Polar checkout scaffold | Done |
+| Docker Compose | Done |
+| Legal + compliance | Done |
+| Play Store path | Documented |
 
-## Payments (no forced Stripe)
+## Payments
 
-Primary: **Polar** (open source on GitHub)  
-See `docs/PAYMENTS.md`
+**Polar** (GitHub open source) — not forced Stripe/Razorpay.  
+`docs/PAYMENTS.md`
+
+## Self-host
+
+```bash
+docker compose up --build
+```
+
+## Still later (hosted SaaS polish)
+
+- Real E2B live preview URL
+- Better Auth / Clerk production auth
+- Polar product live + webhook entitlements
+- Expo Play Store companion app
+- Monaco polish + Tester evidence UI
 
 ## Repo
+
 https://github.com/wr140683-max/aether

@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - E2B_API_KEY=${E2B_API_KEY:-}
+      - POLAR_ACCESS_TOKEN=${POLAR_ACCESS_TOKEN:-}
+      - POLAR_PRODUCT_ID=${POLAR_PRODUCT_ID:-}
+      - HELIX_PROJECTS_ROOT=/data/projects
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    volumes:
+      - helix_projects:/data/projects
+    restart: unless-stopped
+
+volumes:
+  helix_projects:
