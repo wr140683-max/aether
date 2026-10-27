@@ -5,7 +5,16 @@ import type { LLMConfig } from "../../../../../packages/core/llm";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, goal, provider = "xai", model = "grok-3-mini", apiKey } = body;
+    const {
+      action,
+      goal,
+      taskTitle,
+      taskDescription,
+      stack,
+      provider = "xai",
+      model = "grok-3-mini",
+      apiKey,
+    } = body;
 
     const llm: LLMConfig = {
       provider,
@@ -31,11 +40,33 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (action === "code") {
+      if (!goal || !taskTitle) {
+        return NextResponse.json(
+          { error: "goal and taskTitle are required" },
+          { status: 400 }
+        );
+      }
+      const coded = await orch.codeTask({
+        userGoal: goal,
+        taskTitle,
+        taskDescription: taskDescription || taskTitle,
+        stack,
+      });
+      return NextResponse.json({
+        ...coded,
+        sessionCost: orch.getSessionCost(),
+        history: orch.getHistory(),
+      });
+    }
+
     if (action === "status") {
       return NextResponse.json({
         ok: true,
         message: "Helix agent API ready",
+        actions: ["plan", "code", "status"],
         providers: ["xai", "openai", "anthropic", "ollama", "google"],
+        payments: ["polar", "razorpay-optional"],
       });
     }
 
