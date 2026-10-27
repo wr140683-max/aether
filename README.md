@@ -1,13 +1,15 @@
-# Aether
+# Pulse
 
-**Aether** is an open-source, agentic vibe-coding platform that turns natural language into production-ready full-stack apps — without the credit traps, opaque agent loops, and vendor lock-in of tools like Emergent.
+**Pulse** is an open-source, agentic vibe-coding platform that turns natural language into production-ready full-stack apps — without the credit traps, opaque agent loops, and vendor lock-in of tools like Emergent.
 
 > Describe what you want. Watch transparent multi-agent planning, coding, testing, and deployment. Own every line of code. Run it locally or self-host it.
 
-## Why Aether > Emergent
+**Formerly known as Aether** (repo name will be updated).
 
-| Feature | Emergent | **Aether** |
-|---------|----------|------------|
+## Why Pulse > Emergent
+
+| Feature | Emergent | **Pulse** |
+|---------|----------|-----------|
 | Cost model | Opaque credits that burn on loops & failed attempts | **BYOK + local models**. Pay only what the model costs you. Zero platform tax. |
 | Agent transparency | Black-box. Claims "done" while features are broken | Full plan → diffs → test evidence → human approve before apply |
 | Code ownership | GitHub sync restricted on lower plans | Always full Git ownership. Every change is a real commit. |
@@ -15,7 +17,22 @@
 | Recovery & history | Data loss reports, weak versioning | Full Git history + easy rollback. Project never disappears. |
 | Control | Agent often ignores instructions & breaks working features | Human-in-the-loop by default on non-trivial changes. Explicit approve/reject. |
 | Hosting | Platform-hosted with lock-in feel | Local-first, Docker self-host, or any cloud you control |
-| Open source | Closed | Fully open source. Fork it, extend it, make it yours. |
+| Trust & compliance | Mixed reviews on fees, loops, support | Built-in: no dark patterns, clear policies, accessibility, data deletion, cookie consent |
+
+## Trust & Compliance (from day one)
+
+We maintain:
+
+- Privacy Policy, Terms, Refund Policy, Cookie Policy
+- Data deletion / subject access process
+- Cookie consent banner (open-source, GDPR-friendly)
+- Accessibility targets (WCAG 2.1 AA): alt text, contrast, keyboard navigation
+- No hidden fees, no fake reviews, no unsupported claims
+- Minimal data collection + easy unsubscribe
+- Third-party SDK audit process
+- Business details & contact clearly available
+
+See `docs/legal/` and `docs/COMPLIANCE_CHECKLIST.md`.
 
 ## Core Architecture
 
@@ -37,53 +54,50 @@ Everything is observable. No hidden loops that silently burn money.
 
 ## Features (Roadmap)
 
-### Phase 1 (Current – MVP)
-- [x] Project scaffold + vision
+### Phase 1 (Current)
+- [x] Project scaffold + vision + rebrand to Pulse
+- [x] Legal & compliance foundation
 - [ ] Multi-agent loop (Planner → Coder → Tester)
 - [ ] Web UI: chat + Monaco editor + live preview
 - [ ] Local sandbox execution (Docker)
-- [ ] Git-first workflow (commit every accepted change)
+- [ ] Git-first workflow
 - [ ] BYOK for xAI / OpenAI / Anthropic / local Ollama
+- [ ] Cookie consent + accessibility basics
 
 ### Phase 2
-- Full-stack generation (Next.js + FastAPI/Node + chosen DB)
-- Auth, payments, file uploads out of the box
+- Full-stack generation
+- Auth, payments, file uploads
 - Diff viewer with one-click apply/reject
-- Mobile preview (Expo)
+- Mobile preview
 
 ### Phase 3
 - Self-host Docker Compose
-- Plugin system for custom tools
-- Team collaboration + shared workspaces
-- Advanced security scanning before deploy
+- Plugin system
+- Team features
+- Advanced security scanning
 
-## Quick Start (coming very soon)
+## Quick Start (coming soon)
 
 ```bash
-# Clone
 git clone https://github.com/wr140683-max/aether.git
 cd aether
-
-# Install
 pnpm install
-
-# Run (local)
 pnpm dev
 ```
 
 ## Tech Stack (planned)
 
-- **Frontend**: Next.js 15 + Tailwind + shadcn/ui + Monaco
-- **Agent Orchestration**: Custom multi-agent + LangGraph-style flow
-- **Sandbox**: Docker / E2B-style isolated environments
-- **Database options**: SQLite (default), Postgres, Mongo
-- **Models**: Bring your own keys (xAI Grok, Claude, GPT, Gemini, Ollama)
+- Frontend: Next.js 15 + Tailwind + shadcn/ui + Monaco
+- Agents: Structured multi-agent with evidence contracts
+- Sandbox: Docker
+- Models: Bring your own keys
+- Consent: c15t or equivalent open-source CMP
 
 ## Contributing
 
-Aether is built in the open. Issues, PRs, and ideas are welcome.
+Pulse is built in the open. Issues and PRs welcome.
 
 ---
 
 **Built to fix what Emergent got wrong.**  
-Transparent. Controllable. Yours.
+Transparent. Controllable. Trustworthy. Yours.
