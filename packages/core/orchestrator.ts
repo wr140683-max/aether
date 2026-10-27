@@ -1,3 +1,7 @@
+/**
+ * Helix Orchestrator — plan-first, human-in-the-loop
+ */
+
 import type { Plan, AgentMessage, ProjectContext } from "./types";
 import { generate, type LLMConfig, estimateCost } from "./llm";
 import { createPlannerPrompt } from "../agents/planner";
@@ -108,6 +112,45 @@ export class HelixOrchestrator {
     });
 
     return parseCoderFromText(result.text);
+  }
+
+  async testTask(opts: {
+    taskTitle: string;
+    command?: string;
+    projectId?: string;
+  }) {
+    const { createSandbox } = await import("../sandbox");
+    const command =
+      opts.command || 'echo "Helix tester: no command specified"';
+    const sbx = await createSandbox({
+      backend: "local",
+      projectId: opts.projectId || "demo",
+    });
+    const started = Date.now();
+    const result = await sbx.run(command);
+    const durationMs = Date.now() - started;
+
+    this.add({
+      role: "tester",
+      content: result.stdout || result.stderr || "no output",
+      timestamp: new Date().toISOString(),
+      structured: {
+        taskId: opts.taskTitle,
+        passed: result.exitCode === 0,
+        logs: `${result.stdout || ""}${result.stderr || ""}`,
+        exitCode: result.exitCode,
+        durationMs,
+        command,
+      },
+    });
+
+    return {
+      passed: result.exitCode === 0,
+      logs: `${result.stdout || ""}${result.stderr || ""}`,
+      exitCode: result.exitCode,
+      command,
+      durationMs,
+    };
   }
 
   async runGoal(_userGoal: string, _ctx: ProjectContext) {
