@@ -1,55 +1,56 @@
 # Helix
 
-**Helix** — open-source agentic vibe-coding platform. Transparent multi-agent builds, BYOK, no credit traps, full code ownership.
+**Helix** — open-source agentic app builder. Transparent agents, BYOK, no credit traps, full code ownership.
 
-Better than Emergent by design: plan → diffs → evidence → human approve. Live cost meter. E2B or local Docker sandbox.
+**Website + Play Store** (Emergent is website-only — this is our distribution edge).
 
-## Quick Start
+## Quick Start (Web)
 
 ```bash
 git clone https://github.com/wr140683-max/aether.git
 cd aether
 pnpm install
 cp .env.example apps/web/.env.local
-# Add XAI_API_KEY=... (or OPENAI_API_KEY) into apps/web/.env.local
+# Put XAI_API_KEY=... in apps/web/.env.local
 pnpm dev
 ```
 
-Open http://localhost:3000 → type a goal → Send. Planner runs. You stay in control.
+Open http://localhost:3000 → describe an app → Send → see Plan + tasks → Approve when ready.
 
-## What is ready
+## What works today
 
-| Area | Status |
-|------|--------|
-| 3-panel UI (Files + Preview + Agent Timeline) | Done |
-| Agent Timeline connected to API | Done |
-| BYOK LLM layer (xAI / OpenAI / Anthropic / Google / Ollama) | Done + real AI SDK ready |
-| Cost estimation | Done |
-| Sandbox abstraction (E2B / Docker / mock) | Done |
+| Feature | Status |
+|---------|--------|
+| 3-panel UI | Done |
+| Plan-first agent (no silent loops) | Done |
+| Structured plan parser (tasks list) | Done |
+| Live session cost meter | Done |
+| BYOK (xAI / OpenAI / Anthropic / Google / Ollama) | Done |
+| Sandbox abstraction (E2B / Docker) | Done |
 | Cookie consent (no dark patterns) | Done |
 | Legal + compliance pack | Done |
-| Monetization principles | Done |
-| Plan-first orchestrator (no silent loops) | Done |
+| Monetization + distribution plan | Done |
+| Mobile (Expo) scaffold + Play Store path | Documented |
 
-## Remaining (high value)
+## Money path
 
-1. Parse structured Plan JSON into task list in UI
-2. Coder step after Approve (write into sandbox)
-3. Real E2B when key present
-4. Monaco + live preview iframe
-5. Auth + hosted billing
+See `docs/DISTRIBUTION.md` and `docs/MONETIZATION.md`.
 
-See `docs/NEXT_STEPS.md` and `docs/MONETIZATION.md`.
+**Short version:**
+1. **Web free** — local + BYOK (builds trust)
+2. **Web paid** — hosted sandboxes + managed keys (Starter / Pro)
+3. **Play Store app** — companion (approve from phone, notifications) → same Pro subscription via Play Billing
+4. Emergent has no Play Store presence → extra discovery channel for Helix
 
-## Stack
+## Remaining to ship & earn
 
-- Next.js 15 + Tailwind
-- Vercel AI SDK (BYOK)
-- E2B preferred sandbox
-- Human-in-the-loop by default
+1. Coder step after Approve (write files in sandbox)
+2. Auth + save projects
+3. Hosted E2B minutes + Stripe
+4. Expo companion app → Play Store internal testing
 
 ## Repo
 https://github.com/wr140683-max/aether
 
 ---
-**Transparent. Controllable. Powerful.**
+**Web + Mobile. Transparent. Controllable. Monetizable.**
