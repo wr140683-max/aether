@@ -1,50 +1,55 @@
 /**
- * Coder Agent
- * Receives one Task from the Plan and produces real file diffs.
- * Must never claim success without producing actual Diff objects.
+ * Helix Coder agent — produces file diffs for one approved task.
  */
 
-import type { Diff, Task } from "../core/types";
-
 export interface CoderInput {
-  task: Task;
-  projectFiles: Record<string, string>;   // path → content
-  planSummary: string;
+  taskTitle: string;
+  taskDescription: string;
+  userGoal: string;
+  stack: {
+    frontend?: string;
+    backend?: string;
+    database?: string;
+  };
+  existingFiles?: string[];
+}
+
+export interface FileChange {
+  path: string;
+  action: "create" | "modify" | "delete";
+  content?: string;
+  summary: string;
 }
 
 export function createCoderPrompt(input: CoderInput): string {
-  return `
-You are the Coder agent in Aether.
+  return `You are the Coder agent in Helix.
 
-Current task:
-Title: ${input.task.title}
-Description: ${input.task.description}
-${input.task.files ? `Expected files: ${input.task.files.join(", ")}` : ""}
+User goal: ${input.userGoal}
+Approved task: ${input.taskTitle}
+Task details: ${input.taskDescription}
+Stack: ${JSON.stringify(input.stack)}
+Existing files (if any): ${(input.existingFiles || []).join(", ") || "none"}
 
-Plan context:
-${input.planSummary}
+Rules:
+1. Produce a SMALL, focused set of files for THIS task only (max 6 files).
+2. Prefer TypeScript + Next.js App Router patterns when stack is Next.js.
+3. Return ONLY valid JSON in this shape:
 
-Your job:
-- Implement ONLY this task.
-- Produce clean, production-quality code.
-- Prefer small, focused changes.
-- Return a list of Diff objects (path + newContent + short explanation).
-- Do not invent files that are not needed for this task.
-
-Return ONLY valid JSON:
+\`\`\`json
 {
-  "diffs": [
+  "summary": "one sentence what you built",
+  "files": [
     {
-      "path": "relative/path/to/file",
-      "newContent": "full new file content",
-      "explanation": "what this change does"
+      "path": "apps/web/src/app/page.tsx",
+      "action": "create",
+      "summary": "Landing page",
+      "content": "... full file content ..."
     }
   ]
 }
-`.trim();
-}
+\`\`\`
 
-export async function runCoder(input: CoderInput): Promise<Diff[]> {
-  // TODO: call model + apply safety checks
-  throw new Error("Coder not yet wired. Coming next.");
+4. No markdown outside the JSON block.
+5. Keep content production-ready but minimal — no fake features.
+6. Do not invent secrets or API keys.`;
 }
