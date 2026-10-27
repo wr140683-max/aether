@@ -1,7 +1,6 @@
 /**
  * Helix LLM layer — BYOK first
- * Uses Vercel AI SDK patterns for multi-provider support.
- * User pays the model provider directly. Zero platform tax on tokens.
+ * Ready for Vercel AI SDK. Real generateText when packages are installed.
  */
 
 export type ProviderId = "xai" | "openai" | "anthropic" | "ollama" | "google";
@@ -78,16 +77,80 @@ export async function generate(
   system: string,
   prompt: string
 ): Promise<GenerateResult> {
-  const stub = `[Helix LLM stub — provider=${config.provider} model=${config.model}]
-System: ${system.slice(0, 80)}...
-Prompt: ${prompt.slice(0, 120)}...
+  const key =
+    config.apiKey ||
+    process.env[PROVIDER_DEFAULTS[config.provider]?.envKey || ""] ||
+    process.env.XAI_API_KEY ||
+    process.env.OPENAI_API_KEY;
 
-Replace this with real generateText() from the Vercel AI SDK.
-See packages/core/llm.ts for the integration point.`;
+  try {
+    const { generateText } = await import("ai");
 
-  return {
-    text: stub,
-    usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
-    finishReason: "stop",
-  };
+    let model: any;
+    if (config.provider === "xai") {
+      const { createXai } = await import("@ai-sdk/xai");
+      const xai = createXai({ apiKey: key });
+      model = xai(config.model || "grok-3-mini");
+    } else if (config.provider === "openai") {
+      const { createOpenAI } = await import("@ai-sdk/openai");
+      const openai = createOpenAI({ apiKey: key });
+      model = openai(config.model || "gpt-4o-mini");
+    } else if (config.provider === "anthropic") {
+      const { createAnthropic } = await import("@ai-sdk/anthropic");
+      const anthropic = createAnthropic({ apiKey: key });
+      model = anthropic(config.model || "claude-3-5-haiku-latest");
+    } else if (config.provider === "google") {
+      const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
+      const google = createGoogleGenerativeAI({ apiKey: key });
+      model = google(config.model || "gemini-2.0-flash");
+    } else if (config.provider === "ollama") {
+      const { createOpenAI } = await import("@ai-sdk/openai");
+      const ollama = createOpenAI({
+        baseURL: config.baseURL || "http://localhost:11434/v1",
+        apiKey: "ollama",
+      });
+      model = ollama(config.model || "llama3.2");
+    } else {
+      throw new Error(`Unsupported provider: ${config.provider}`);
+    }
+
+    const result = await generateText({
+      model,
+      system,
+      prompt,
+      temperature: config.temperature ?? 0.4,
+      maxTokens: config.maxTokens ?? 4096,
+    });
+
+    return {
+      text: result.text,
+      usage: result.usage
+        ? {
+            promptTokens: result.usage.promptTokens ?? 0,
+            completionTokens: result.usage.completionTokens ?? 0,
+            totalTokens: result.usage.totalTokens ?? 0,
+          }
+        : undefined,
+      finishReason: result.finishReason,
+    };
+  } catch (err: any) {
+    const reason = err?.message || String(err);
+    return {
+      text: `[Helix LLM fallback]
+Provider: ${config.provider} | Model: ${config.model}
+Key present: ${key ? "yes" : "no"}
+
+Could not call real model (${reason}).
+
+To enable real generation:
+1. pnpm add ai @ai-sdk/xai @ai-sdk/openai @ai-sdk/anthropic @ai-sdk/google
+2. Set XAI_API_KEY (or OPENAI_API_KEY / ANTHROPIC_API_KEY) in .env.local
+3. Restart the dev server
+
+System prompt preview: ${system.slice(0, 100)}...
+User goal preview: ${prompt.slice(0, 150)}...`,
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      finishReason: "error",
+    };
+  }
 }

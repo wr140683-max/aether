@@ -9,65 +9,142 @@ import {
   ThumbsUp,
   ThumbsDown,
   MessageSquare,
+  Send,
 } from "lucide-react";
 
 type StepStatus = "pending" | "running" | "done" | "failed" | "needs_approval";
 
 interface AgentStep {
   id: string;
-  role: "planner" | "coder" | "tester" | "system";
+  role: "planner" | "coder" | "tester" | "system" | "user";
   title: string;
   status: StepStatus;
   content?: string;
-  evidence?: string;
   diffs?: { path: string; summary: string }[];
 }
 
-const DEMO_STEPS: AgentStep[] = [
-  {
-    id: "1",
-    role: "planner",
-    title: "Plan created",
-    status: "done",
-    content:
-      "Build a simple SaaS landing page with pricing table and email signup. Stack: Next.js + Tailwind + SQLite.",
-  },
-  {
-    id: "2",
-    role: "coder",
-    title: "Created landing page",
-    status: "needs_approval",
-    content: "Implemented hero, features, and pricing sections.",
-    diffs: [
-      { path: "app/page.tsx", summary: "+142 lines" },
-      { path: "components/Pricing.tsx", summary: "new file" },
-    ],
-  },
-  {
-    id: "3",
-    role: "tester",
-    title: "Typecheck & build",
-    status: "pending",
-  },
-];
-
 export function AgentPanel() {
-  const [steps] = useState(DEMO_STEPS);
+  const [steps, setSteps] = useState<AgentStep[]>([]);
   const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sessionCost, setSessionCost] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSend() {
+    if (!prompt.trim() || loading) return;
+    setLoading(true);
+    setError(null);
+
+    const userStep: AgentStep = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      title: "You",
+      status: "done",
+      content: prompt.trim(),
+    };
+    setSteps((prev) => [...prev, userStep]);
+
+    const runningStep: AgentStep = {
+      id: `planner-${Date.now()}`,
+      role: "planner",
+      title: "Planning…",
+      status: "running",
+    };
+    setSteps((prev) => [...prev, runningStep]);
+
+    try {
+      const res = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "plan",
+          goal: prompt.trim(),
+          provider: "xai",
+          model: "grok-3-mini",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Request failed");
+
+      setSessionCost((c) => c + (data.sessionCost || 0));
+
+      setSteps((prev) =>
+        prev.map((s) =>
+          s.id === runningStep.id
+            ? {
+                ...s,
+                title: "Plan ready",
+                status: "done" as StepStatus,
+                content:
+                  data.plan?.summary ||
+                  data.history?.[0]?.content ||
+                  "Plan generated.",
+              }
+            : s
+        )
+      );
+
+      if (data.plan?.tasks?.length) {
+        setSteps((prev) => [
+          ...prev,
+          {
+            id: `approve-${Date.now()}`,
+            role: "coder",
+            title: "Ready to implement",
+            status: "needs_approval",
+            content: `Next task: ${data.plan.tasks[0].title}`,
+            diffs: [
+              { path: "(pending)", summary: "Awaiting your approval" },
+            ],
+          },
+        ]);
+      }
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+      setSteps((prev) =>
+        prev.map((s) =>
+          s.id === runningStep.id
+            ? { ...s, title: "Failed", status: "failed", content: err.message }
+            : s
+        )
+      );
+    } finally {
+      setLoading(false);
+      setPrompt("");
+    }
+  }
 
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-zinc-800 px-4 py-3">
-        <h2 className="text-sm font-semibold">Agent Timeline</h2>
-        <p className="text-xs text-zinc-500">
-          Every step is visible. Nothing applies without your approval.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold">Agent Timeline</h2>
+            <p className="text-xs text-zinc-500">
+              Every step visible. Nothing applies without approval.
+            </p>
+          </div>
+          <div className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 font-mono text-xs text-emerald-400">
+            ${sessionCost.toFixed(4)}
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+        {steps.length === 0 && (
+          <div className="rounded-lg border border-dashed border-zinc-700 p-6 text-center text-sm text-zinc-500">
+            Describe an app or change below. Helix will plan first — you stay in control.
+          </div>
+        )}
         {steps.map((step) => (
           <StepCard key={step.id} step={step} />
         ))}
+        {error && (
+          <div className="rounded-lg border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-300">
+            {error}
+          </div>
+        )}
       </div>
 
       <div className="border-t border-zinc-800 p-4">
@@ -75,16 +152,32 @@ export function AgentPanel() {
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             placeholder="Describe what to build or change…"
             rows={2}
-            className="flex-1 resize-none rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none"
+            disabled={loading}
+            className="flex-1 resize-none rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none disabled:opacity-50"
           />
-          <button className="self-end rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">
+          <button
+            onClick={handleSend}
+            disabled={loading || !prompt.trim()}
+            className="flex items-center gap-1.5 self-end rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
             Send
           </button>
         </div>
         <p className="mt-2 text-xs text-zinc-600">
-          Tip: Be specific. Smaller tasks = better results + lower cost.
+          Enter to send · Shift+Enter for new line · BYOK ready
         </p>
       </div>
     </div>
@@ -112,7 +205,10 @@ function StepCard({ step }: { step: AgentStep }) {
             <span className="text-sm font-medium text-zinc-100">{step.title}</span>
           </div>
           {step.content && (
-            <p className="mt-1 text-sm text-zinc-400">{step.content}</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-400">
+              {step.content.slice(0, 600)}
+              {step.content.length > 600 ? "…" : ""}
+            </p>
           )}
           {step.diffs && step.diffs.length > 0 && (
             <ul className="mt-2 space-y-1">
@@ -129,7 +225,7 @@ function StepCard({ step }: { step: AgentStep }) {
             </ul>
           )}
           {step.status === "needs_approval" && (
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <button className="flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500">
                 <ThumbsUp className="h-3.5 w-3.5" />
                 Approve & Commit
